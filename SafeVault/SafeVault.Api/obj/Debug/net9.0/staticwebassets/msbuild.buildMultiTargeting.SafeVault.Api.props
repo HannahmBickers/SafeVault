@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\build\SafeVault.Api.props" />
+</Project>
