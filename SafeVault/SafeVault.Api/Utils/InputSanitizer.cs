@@ -4,8 +4,6 @@ namespace Utils
 {
     public static class InputSanitizer
     {
-        // SanitizeInput removes HTML tags and common SQL injection characters.
-        // Always use parameterized queries in addition to input sanitization.
         public static string SanitizeInput(string input)
         {
             if (string.IsNullOrEmpty(input)) 
@@ -18,7 +16,7 @@ namespace Utils
             sanitized = Regex.Replace(input, @"['"";]", string.Empty); // removes ', ", ;
             sanitized = Regex.Replace(sanitized, @"--", string.Empty);     // removes --
 
-            // Trim any extra whitespace
+            
             return sanitized.Trim();
         }
     }
