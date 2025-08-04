@@ -15,7 +15,6 @@ namespace SafeVault.Api.Services
 
         private MySqlConnection GetConnection()
         {
-            // Always use connection strings from configuration, never hardcode credentials
             return new MySqlConnection(_configuration.GetConnectionString("DefaultConnection"));
         }
 
@@ -23,7 +22,6 @@ namespace SafeVault.Api.Services
         {
             using var conn = GetConnection();
             conn.Open();
-            // Use parameterized queries to prevent SQL injection
             string query = "INSERT INTO Users (Username, Email, HashedPassword, Role) VALUES (@Username, @Email, '', 'user')"; // Default role: user
             using var cmd = new MySqlCommand(query, conn);
             cmd.Parameters.AddWithValue("@Username", username);
@@ -33,12 +31,10 @@ namespace SafeVault.Api.Services
 
         public bool RegisterUser(string username, string email, string password, string role = "user")
         {
-            // Always hash passwords before storing them
             string hashedPassword = BCrypt.Net.BCrypt.HashPassword(password);
 
             using var conn = GetConnection();
             conn.Open();
-            // Use parameterized queries to prevent SQL injection
             string query = "INSERT INTO Users (Username, Email, HashedPassword, Role) VALUES (@Username, @Email, @HashedPassword, @Role)";
             using var cmd = new MySqlCommand(query, conn);
             cmd.Parameters.AddWithValue("@Username", username);
@@ -54,7 +50,6 @@ namespace SafeVault.Api.Services
         {
             using var conn = GetConnection();
             conn.Open();
-            // Use parameterized queries to prevent SQL injection
             string query = "SELECT HashedPassword FROM Users WHERE Username = @Username";
             using var cmd = new MySqlCommand(query, conn);
             cmd.Parameters.AddWithValue("@Username", username);
@@ -63,7 +58,6 @@ namespace SafeVault.Api.Services
             if (reader.Read())
             {
                 string storedHash = reader.GetString("HashedPassword");
-                // Always verify password hashes securely
                 return BCrypt.Net.BCrypt.Verify(password, storedHash);
             }
 
@@ -74,7 +68,6 @@ namespace SafeVault.Api.Services
         {
             using var conn = GetConnection();
             conn.Open();
-            // Use parameterized queries to prevent SQL injection
             string query = "SELECT Role FROM Users WHERE Username = @Username";
             using var cmd = new MySqlCommand(query, conn);
             cmd.Parameters.AddWithValue("@Username", username);
@@ -85,7 +78,6 @@ namespace SafeVault.Api.Services
         public bool IsUserInRole(string username, string role)
         {
             using var connection = GetConnection();
-            // Use parameterized queries to prevent SQL injection
             string query = "SELECT COUNT(*) FROM Users WHERE Username = @Username AND Role = @Role";
 
             using var cmd = new MySqlCommand(query, connection);
