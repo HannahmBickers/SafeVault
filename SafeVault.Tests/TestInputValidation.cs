@@ -14,7 +14,7 @@ namespace SafeVault.Tests
 
             Assert.That(result.Contains("'"), Is.False);
             Assert.That(result.Contains("--"), Is.False);
-            Assert.That(result.Contains("DROP"), Is.True); // Words are okay, characters aren't
+            Assert.That(result.Contains("DROP"), Is.True); 
         }
 
         [Test]
