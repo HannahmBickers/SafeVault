@@ -7,7 +7,6 @@ using SafeVault.Api.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Register DbService for dependency injection
 builder.Services.AddScoped<DbService>();
 
 var app = builder.Build();
@@ -22,7 +21,7 @@ app.MapPost("/submit", async (HttpRequest request, DbService dbService) =>
     string username = InputSanitizer.SanitizeInput(form["username"]);
     string email = InputSanitizer.SanitizeInput(form["email"]);
 
-    // Additional validation for dangerous characters (defense in depth)
+    // Additional validation for dangerous characters 
     if (username.Contains("'") || username.Contains("--") || username.Contains(";"))
     {
         return Results.BadRequest("Invalid characters in username.");
@@ -38,7 +37,7 @@ app.MapPost("/submit", async (HttpRequest request, DbService dbService) =>
 app.MapPost("/register", async (HttpRequest request, DbService dbService) =>
 {
     var form = await request.ReadFormAsync();
-    // Always sanitize and validate all user-supplied fields
+    
     string username = InputSanitizer.SanitizeInput(form["username"].ToString());
     string email = InputSanitizer.SanitizeInput(form["email"].ToString());
     string password = InputSanitizer.SanitizeInput(form["password"].ToString());
@@ -51,7 +50,7 @@ app.MapPost("/register", async (HttpRequest request, DbService dbService) =>
 
     bool success = dbService.RegisterUser(username, email, password, role);
 
-    // Do not include user input in response messages
+   
     return success
         ? Results.Ok("User registered successfully.")
         : Results.BadRequest("Registration failed.");
@@ -73,7 +72,7 @@ app.MapPost("/login", async (HttpRequest request, DbService dbService) =>
 
     bool authenticated = dbService.AuthenticateUser(username, password);
 
-    // Never reflect user input in error or success messages
+    
     return authenticated
         ? Results.Ok("Login successful.")
         : Results.Unauthorized();
@@ -91,7 +90,7 @@ app.MapPost("/admin", async (HttpRequest request, DbService dbService) =>
         return Results.BadRequest("Invalid characters in username.");
     }
 
-    // Only return generic messages, never echo user input
+    
     if (dbService.IsUserInRole(username, "admin"))
     {
         return Results.Ok("Welcome, Admin!");
@@ -101,5 +100,4 @@ app.MapPost("/admin", async (HttpRequest request, DbService dbService) =>
 });
 
 app.Run();
-// Always HTML-encode user data in any HTML response or Razor view to prevent XSS
-// Never trust or directly output user input without proper encoding
+
